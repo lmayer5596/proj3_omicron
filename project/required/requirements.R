@@ -1,7 +1,13 @@
 install.packages('data.table')
 install.packages('glmnet')
+install.packages('caret')
+install.packages('Metrics')
+install.packages('plotmo')
+install.packages('lubridate')
 
 library(data.table)
 library(caret)
 library(Metrics)
 library(glmnet)
+library(plotmo)
+library(lubridate)
