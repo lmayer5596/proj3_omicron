@@ -35,4 +35,4 @@ submit$ic50_Omicron <- pred
 View(submit)
 mean(submit$ic50_Omicron)
 #saves the final submission as a csv
-#fwrite(submit, './project/volume/data/processed/submit8.csv')
+#fwrite(submit, './project/volume/data/processed/submit10.csv')
