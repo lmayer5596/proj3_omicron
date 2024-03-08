@@ -27,10 +27,15 @@ master[priorSxAtFirstVisitSeverity == 'Mild', priorSxAtFirstVisitSeverity := 1]
 master[priorSxAtFirstVisitSeverity == 'Moderate', priorSxAtFirstVisitSeverity := 2]
 master[priorSxAtFirstVisitSeverity == 'Severe', priorSxAtFirstVisitSeverity := 3]
 
+master$num_doses <- 1 * (!is.na(master$dose_2)) + 1 * (!is.na(master$dose_3))
+
 master$dose_3[is.na(master$dose_3)] <- 0
 master[dose_3 == 'BNT162b2', dose_3 := 1]
 master[dose_3 == 'mRNA1272', dose_3 := 2]
 master[dose_3 == 'AZD1222', dose_3 := 3]
+
+#master$num_doses <- 1 * (!is.na(master$dose_2)) + 1 * (!is.na(master$dose_3))
+#master$num_doses <- master$num_doses + master$dose_3
 
 master$posTest_beforeVisit <- 1 * (master$posTest_beforeVisit == 'Yes')
 master$sex <- 1 * (master$sex == 'Female')
@@ -63,8 +68,8 @@ train <- master[train == 1][order(sort_col)]
 test <- master[train == 0][order(sort_col)]
 
 #removes unwanted columns
-train <- train[, !c('sample_id', 'train', 'sort_col')]
-test <- test[, !c('sample_id', 'train', 'sort_col')]
+train <- train[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]
+test <- test[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]
 
 format$ic50_Omicron <- 0
 

@@ -17,10 +17,10 @@ test <- predict(dummies, newdata = test)
 train <- as.matrix(train)
 trest <- as.matrix(test)
 
-gl_model <- cv.glmnet(train, train_y, alpha = 0, family = "gaussian")
+gl_model <- cv.glmnet(train, train_y, alpha = 0.75, family = "gaussian")
 bestlam <- gl_model$lambda.min
 
-gl_model <- glmnet(train, train_y, alpha = 0, family="gaussian")
+gl_model <- glmnet(train, train_y, alpha = 0.75, family="gaussian")
 
 plot_glmnet(gl_model)
 
@@ -35,4 +35,4 @@ submit$ic50_Omicron <- pred
 View(submit)
 mean(submit$ic50_Omicron)
 #saves the final submission as a csv
-#fwrite(submit, './project/volume/data/processed/submit7.csv')
+#fwrite(submit, './project/volume/data/processed/submit8.csv')
