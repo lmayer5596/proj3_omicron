@@ -57,6 +57,12 @@ master[days_sinceSxLatest <= 0, days_sinceSxLatest := max(master$days_sinceSxLat
 master$days_sincePosTest_latest[is.na(master$days_sincePosTest_latest)] <- 0
 master[days_sincePosTest_latest <= 0, days_sincePosTest_latest := max(master$days_sincePosTest_latest)]
 
+#master$days_since_recent <- 0
+#for (i in 1:nrow(master)) {
+#  master$days_since_recent[i] <- min(master$days_sinceDose2[i], master$days_sinceDose3[i], master$days_sincePosTest_latest[i])
+#}
+#View(master)
+
 #maintains order so rows do not shuffle
 setkey(master, sample_id)
 setkey(covar, sample_id)
@@ -69,8 +75,8 @@ train <- master[train == 1][order(sort_col)]
 test <- master[train == 0][order(sort_col)]
 
 #removes unwanted columns
-train <- train[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]
-test <- test[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]
+train <- train[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]#, 'days_sinceDose2', 'days_sinceDose3', 'days_sincePosTest_latest')]
+test <- test[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]#, 'days_sinceDose2', 'days_sinceDose3', 'days_sincePosTest_latest')]
 
 format$ic50_Omicron <- 0
 

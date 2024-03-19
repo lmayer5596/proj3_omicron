@@ -34,3 +34,4 @@ predict(gl_model, s = bestlam, newx = test, type = "coefficients")
 submit$ic50_Omicron <- pred
 #saves the final submission as a csv
 #fwrite(submit, './project/volume/data/processed/submit11.csv')
+View(submit)

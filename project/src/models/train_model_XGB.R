@@ -14,19 +14,19 @@ x_test <- predict(dummies, newdata = test)
 dtrain <- xgb.DMatrix(x_train, label = y_train, missing = NA)
 dtest <- xgb.DMatrix(x_test, missing = NA)
 
-hyper_perm_tune <- NULL
+#hyper_perm_tune <- NULL
 
 #cross validation
 param <- list(  objective           = "reg:linear",
-                gamma               =0.00,
                 booster             = "gbtree",
                 eval_metric         = "rmse",
-                eta                 = 0.02,
-                max_depth           = 15,
-                min_child_weight    = 1,
-                subsample           = 1.0,
-                colsample_bytree    = 1.0,
-                tree_method = 'hist'
+                tree_method         = 'hist',
+                eta                 = 0.01,
+                max_depth           = 25, #depth- move up from best value
+                min_child_weight    = 10, #depth
+                gamma               = 0.00, #depth
+                subsample           = 1.0,#1 means all rows
+                colsample_bytree    = 1.0
 )
 
 XGBm <- xgb.cv(params = param, nfold = 5, nrounds = 10000, missing = NA, data = dtrain, print_every_n = 1, early_stopping_rounds = 25)
@@ -40,6 +40,7 @@ new_row$best_ntrees <- best_ntrees
 test_error <- unclass(XGBm)$evaluation_log[best_ntrees, ]$test_rmse_mean
 new_row$test_error <- test_error
 hyper_perm_tune <- rbind(new_row, hyper_perm_tune)
+hyper_perm_tune
 
 #use model
 watchlist <- list(train = dtrain)
@@ -48,3 +49,4 @@ pred <- predict(XGBm, newdata = dtest)
 
 submit$ic50_Omicron <- pred
 View(submit)
+#fwrite(submit, './project/volume/data/processed/submit11.csv')
