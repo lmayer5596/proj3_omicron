@@ -27,19 +27,19 @@ master[priorSxAtFirstVisitSeverity == 'Moderate', priorSxAtFirstVisitSeverity :=
 master[priorSxAtFirstVisitSeverity == 'Severe', priorSxAtFirstVisitSeverity := 3]
 
 #creates column to replace dose 2 and dose 3
-master$num_doses <- 1 * (!is.na(master$dose_2)) + 1 * (!is.na(master$dose_3))
+#master$num_doses <- 1 * (!is.na(master$dose_2)) + 1 * (!is.na(master$dose_3))
 
 #changes dose_3 to numeric
-master$dose_3[is.na(master$dose_3)] <- 0
-master[dose_3 == 'BNT162b2', dose_3 := 1]
-master[dose_3 == 'mRNA1272', dose_3 := 2]
-master[dose_3 == 'AZD1222', dose_3 := 3]
+#master$dose_3[is.na(master$dose_3)] <- 0
+#master[dose_3 == 'BNT162b2', dose_3 := 1]
+#master[dose_3 == 'mRNA1272', dose_3 := 2]
+#master[dose_3 == 'AZD1222', dose_3 := 3]
 
 #changes all other categorical variables to numeric
 master$posTest_beforeVisit <- 1 * (master$posTest_beforeVisit == 'Yes')
-master$sex <- 1 * (master$sex == 'Female')
-master$centre <- 1 * (master$centre == 'crick')
-master$dose_2 <- 1 * (master$dose_2 == 'BNT162b2')
+#master$sex <- 1 * (master$sex == 'Female')
+#master$centre <- 1 * (master$centre == 'crick')
+#master$dose_2 <- 1 * (master$dose_2 == 'BNT162b2')
 
 #removes negative numbers and zeroes and turns them into a larger number at the upper end of the range
 master$days_sinceDose2[is.na(master$days_sinceDose2)] <- 0
@@ -75,8 +75,8 @@ train <- master[train == 1][order(sort_col)]
 test <- master[train == 0][order(sort_col)]
 
 #removes unwanted columns
-train <- train[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]#, 'days_sinceDose2', 'days_sinceDose3', 'days_sincePosTest_latest')]
-test <- test[, !c('sample_id', 'train', 'sort_col', 'dose_2', 'dose_3')]#, 'days_sinceDose2', 'days_sinceDose3', 'days_sincePosTest_latest')]
+train <- train[, !c('sample_id', 'train', 'sort_col')]#, 'dose_2', 'dose_3')]#, 'days_sinceDose2', 'days_sinceDose3', 'days_sincePosTest_latest')]
+test <- test[, !c('sample_id', 'train', 'sort_col')]#, 'dose_2', 'dose_3')]#, 'days_sinceDose2', 'days_sinceDose3', 'days_sincePosTest_latest')]
 
 format$ic50_Omicron <- 0
 

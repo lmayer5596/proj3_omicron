@@ -3,27 +3,30 @@ train <- fread('./project/volume/data/interim/train.csv')
 submit <- fread('./project/volume/data/interim/submit.csv')
 
 #save data before loss
-y_train <- train$ic50_Omicron
-y_test <- test$ic50_Omicron
+y.train <- train$ic50_Omicron
+y.test <- test$ic50_Omicron
+
+#train <- train[, c('age', 'sex', 'centre')]
+#test <- test[, c('age', 'sex', 'centre')]
 
 #using dummy variables to predict
 dummies <- dummyVars(ic50_Omicron~ ., data = train)
-x_train <- predict(dummies, newdata = train)
-x_test <- predict(dummies, newdata = test)
+x.train <- predict(dummies, newdata = train)
+x.test <- predict(dummies, newdata = test)
 
-dtrain <- xgb.DMatrix(x_train, label = y_train, missing = NA)
-dtest <- xgb.DMatrix(x_test, missing = NA)
+dtrain <- xgb.DMatrix(x.train, label = y.train, missing = NA)
+dtest <- xgb.DMatrix(x.test, missing = NA)
 
 #hyper_perm_tune <- NULL
 
 #cross validation
-param <- list(  objective           = "reg:linear",
+param <- list(  objective           = "reg:squarederror",
                 booster             = "gbtree",
                 eval_metric         = "rmse",
                 tree_method         = 'hist',
-                eta                 = 0.01,
-                max_depth           = 25, #depth- move up from best value
-                min_child_weight    = 10, #depth
+                eta                 = 0.05,
+                max_depth           = 20, #depth- move up from best value
+                min_child_weight    = 1, #depth
                 gamma               = 0.00, #depth
                 subsample           = 1.0,#1 means all rows
                 colsample_bytree    = 1.0
@@ -49,4 +52,4 @@ pred <- predict(XGBm, newdata = dtest)
 
 submit$ic50_Omicron <- pred
 View(submit)
-#fwrite(submit, './project/volume/data/processed/submit11.csv')
+fwrite(submit, './project/volume/data/processed/submit11.csv')
