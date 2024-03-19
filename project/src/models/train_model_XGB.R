@@ -20,7 +20,7 @@ dtest <- xgb.DMatrix(x.test, missing = NA)
 #hyper_perm_tune <- NULL
 
 #cross validation
-param <- list(  objective           = "reg:squarederror",
+param <- list(  objective           = "reg:linear",
                 booster             = "gbtree",
                 eval_metric         = "rmse",
                 tree_method         = 'hist',
