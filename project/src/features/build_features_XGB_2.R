@@ -23,7 +23,15 @@ master$dose_3[is.na(master$dose_3)] <- 0
 #master[dose_3 == 'mRNA1272', dose_3 := 2]
 #master[dose_3 == 'AZD1222', dose_3 := 3]
 
+master[days_sinceDose2 <= 0, days_sinceDose2 := NA]
+master[days_sinceDose3 <= 0, days_sinceDose3 := NA]
+master[days_sinceSxLatest <= 0, days_sinceSxLatest := NA]
+master[days_sincePosTest_latest <= 0, days_sincePosTest_latest := NA]
 
+master$days_since_recent <- 0
+for (i in 1:nrow(master)) {
+  master$days_since_recent[i] <- min(master$days_sinceDose2[i], master$days_sinceDose3[i], master$days_sincePosTest_latest[i])
+}
 
 #maintains order so rows do not shuffle
 setkey(master, sample_id)
