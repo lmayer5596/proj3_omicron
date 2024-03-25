@@ -1,3 +1,4 @@
+#read in edited data
 test <- fread('./project/volume/data/interim/test.csv')
 train <- fread('./project/volume/data/interim/train.csv')
 submit <- fread('./project/volume/data/interim/submit.csv')
@@ -5,11 +6,7 @@ submit <- fread('./project/volume/data/interim/submit.csv')
 #reorder train so similar rows are together
 train <- train[order(ic50_Omicron, age, days_sinceDose2)]
 
-# subset out only the columns to model
-drops <- c('age', 'sex', 'centre', 'Sx_severity_most_recent', 'priorSxAtFirstVisitSeverity', 'dose_2')
-
-train <- train[, !drops, with = FALSE]
-test <- test[, !drops, with = FALSE]
+train <- train[!duplicated(train$ic50_Omicron)]
 
 #save data before loss
 y.train <- train$ic50_Omicron
@@ -38,16 +35,17 @@ param <- list(  objective           = "reg:linear",
                 booster             = "gbtree",
                 eval_metric         = "rmse",
                 tree_method         = 'hist',
-                eta                 = 0.005,
-                max_depth           = 5, #depth- move up from best value
-                min_child_weight    = 93, #depth
-                gamma               = .05, #depth
-                subsample           = 1,#1 means all rows
-                colsample_bytree    = .4
+                eta                 = 0.01,
+                max_depth           = 15, #depth- move up from best value
+                min_child_weight    = 40, #depth
+                gamma               = .1, #depth
+                subsample           = .95,#1 means all rows
+                colsample_bytree    = .9
 )
 
-XGBm <- xgb.cv(params = param, nfold = 10, folds = folds, nrounds = 10000, missing = NA, data = dtrain, print_every_n = 1, early_stopping_rounds = 25)
+XGBm <- xgb.cv(params = param, nfold = 10, nrounds = 900, missing = NA, data = dtrain, print_every_n = 1, early_stopping_rounds = 25)
 
+#saves best tree
 best_ntrees <- unclass(XGBm)$best_iteration
 
 new_row <- data.table(t(param))
@@ -57,14 +55,13 @@ new_row$best_ntrees <- best_ntrees
 test_error <- unclass(XGBm)$evaluation_log[best_ntrees, ]$test_rmse_mean
 new_row$test_error <- test_error
 hyper_perm_tune <- rbind(new_row, hyper_perm_tune)
-hyper_perm_tune
 
 #use model
-#best_ntrees = 220
+best_ntrees = 750
 watchlist <- list(train = dtrain)
 XGBm <- xgb.train(params = param, nrounds = best_ntrees, missing = NA, data = dtrain, watchlist = watchlist, print_every_n = 1)
 pred <- predict(XGBm, newdata = dtest)
 
+#save file for submission
 submit$ic50_Omicron <- pred
-#View(submit)
-fwrite(submit, './project/volume/data/processed/submit26.csv')
+fwrite(submit, './project/volume/data/processed/submit_FINAL.csv')
